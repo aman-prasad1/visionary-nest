@@ -1,0 +1,60 @@
+Arey Aman meethe
+
+Kaisa hai bhai? Sun, maine backend me jo bhi changes kiye hain, unka ek chota sa summary bana diya hai tere liye, taaki tujhe idea rahe ki kya-kya fix hua hai.
+
+--------------------------------------------------
+1. Server Start hi nahi ho raha tha:
+--------------------------------------------------
+
+**Issue:**
+Sabse pehle to server chalu hi nahi ho raha tha. Ek choti si spelling mistake thi, `middlewares` likh diya tha `middleware` ki jagah. Aur ek 'streamifier' naam ka package install karna bhool gaya tha.
+
+**Fix:**
+- `portfolio.routes.js` me import path theek kiya.
+- `package.json` me `streamifier` add karke `npm install` chalaya. Ab server chal pada.
+
+--------------------------------------------------
+2. API Routes me Gadbad:
+--------------------------------------------------
+
+**Issue:**
+Frontend se `/api/portfolios` (plural) pe call jaa rahi thi aur backend me route `/api/portfolio` (singular) set tha. Isko theek kiya. Aur file upload wala code galat jagah daal rakha tha.
+
+**Fix:**
+- `app.js` me route ko `/api/portfolios` kar diya.
+- File upload ke liye alag se `upload.route.js` bana di aur `app.js` me add kar di.
+
+--------------------------------------------------
+3. Signup me dikkat:
+--------------------------------------------------
+
+**Issue:**
+Signup me do bade issue the. Pehle to avatar image upload karte hi 'Payload Too Large' error aa jaata tha. Dusra, Cloudinary se 'Invalid namespace' ka ajeeb sa error aa raha tha.
+
+**Fix:**
+- `app.js` me request size limit 16kb se badha ke 5mb kar di.
+- `cloudinary.js` me logic theek kiya taaki woh `talentgrid/talentgrid/users` jaisa galat path na banaye, balki seedha 'avatars' folder me upload kare.
+
+--------------------------------------------------
+4. Login ke baad Authentication Fail:
+--------------------------------------------------
+
+**Issue:**
+Login to ho jaata tha, par uske baad koi bhi protected page nahi chal raha tha. Pata chala ki backend sirf cookies me token check kar raha tha, jabki token to `Authorization` header me aa raha tha.
+
+**Fix:**
+- `auth.middleware.js` me `verifyJWT` function ko update kiya taaki woh header bhi check kare. Ab sab mast chal raha hai.
+
+--------------------------------------------------
+5. Chote-mote aur Fixes:
+--------------------------------------------------
+
+**Issue:**
+Kuch aur bhi choti-moti cheezein theek ki hain.
+
+**Fix:**
+- Jab user profile picture change karega to purana avatar Cloudinary se delete karne ka function `cloudinary.js` me add kiya.
+- API se jo response jaata hai, usko `ApiResponse.js` me thoda sa consistent banaya.
+- `user.model.js` bhi a se banaya hai saare required fields ke saath.
+
+Bas yahi sab tha mota-mota. Ab backend ekdam solid chalna chahiye. Koi dikkat ho to batana!
