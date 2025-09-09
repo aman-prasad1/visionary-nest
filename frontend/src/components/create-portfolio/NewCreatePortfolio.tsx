@@ -21,6 +21,11 @@ const NewCreatePortfolio: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState<any>({
+    social: {
+      github: '',
+      linkedin: '',
+      website: ''
+    },
     skills: [{ name: '', level: '' }],
     projects: [{ title: '', description: '', tech: '', thumbnail: '', github: '', live: '', collaborators: '' }],
     certificates: [{ name: '', issuer: '', date: '', validTill: '', fileUrl: '', relatedSkills: '' }],
@@ -210,7 +215,21 @@ const NewCreatePortfolio: React.FC = () => {
   const prevStep = () => setStep(step - 1);
 
   const handleChange = (input: any) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [input]: e.target.value });
+    const value = e.target.value;
+    
+    // Handle nested properties like 'social.github'
+    if (input.includes('.')) {
+      const [parentKey, childKey] = input.split('.');
+      setFormData({
+        ...formData,
+        [parentKey]: {
+          ...formData[parentKey],
+          [childKey]: value
+        }
+      });
+    } else {
+      setFormData({ ...formData, [input]: value });
+    }
   };
 
   const handleFileChange = (input: any) => (e: React.ChangeEvent<HTMLInputElement>) => {
