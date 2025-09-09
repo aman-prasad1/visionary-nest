@@ -22,7 +22,7 @@ export const getPortfolio = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Portfolio retrieved successfully", portfolio));
+    .json(new ApiResponse(200, portfolio, "Portfolio retrieved successfully"));
 });
 
 // Update portfolio
@@ -52,7 +52,7 @@ export const updatePortfolio = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Portfolio updated successfully", updatedPortfolio)
+      new ApiResponse(200, updatedPortfolio, "Portfolio updated successfully")
     );
 });
 
@@ -77,7 +77,7 @@ export const addProject = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, "Project added successfully", updatedPortfolio));
+    .json(new ApiResponse(201, updatedPortfolio, "Project added successfully"));
 });
 
 // Update project in portfolio
@@ -102,7 +102,7 @@ export const updateProject = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Project updated successfully", updatedPortfolio));
+    .json(new ApiResponse(200, updatedPortfolio, "Project updated successfully"));
 });
 
 // Delete project from portfolio
@@ -126,13 +126,15 @@ export const deleteProject = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Project deleted successfully", updatedPortfolio));
+    .json(new ApiResponse(200, updatedPortfolio, "Project deleted successfully"));
 });
 
 // Get all public portfolios (for browsing)
 export const browsePortfolios = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, search, skills, userType } = req.query;
-  const skip = (page - 1) * limit;
+  const pageNum = parseInt(req.query.page, 10) || 1;
+  const limitNum = parseInt(req.query.limit, 10) || 10;
+  const { search, skills, userType } = req.query;
+  const skip = (pageNum - 1) * limitNum;
 
   // Build the query
   const query = { isPublic: true };
@@ -159,18 +161,18 @@ export const browsePortfolios = asyncHandler(async (req, res) => {
     Portfolio.find(query)
       .sort({ updatedAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit))
+      .limit(limitNum)
       .populate('userId', 'fullname username avatar userType'),
     Portfolio.countDocuments(query)
   ]);
 
   return res.status(200).json(
-    new ApiResponse(200, "Portfolios retrieved successfully", {
+    new ApiResponse(200, {
       portfolios,
       total,
-      totalPages: Math.ceil(total / limit),
-      currentPage: parseInt(page)
-    })
+      totalPages: Math.ceil(total / limitNum),
+      currentPage: pageNum
+    }, "Portfolios retrieved successfully")
   );
 });
 
@@ -217,8 +219,8 @@ export const getFeaturedPortfolios = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        "Featured portfolios retrieved successfully",
-        featuredPortfolios
+        featuredPortfolios,
+        "Featured portfolios retrieved successfully"
       )
     );
 });

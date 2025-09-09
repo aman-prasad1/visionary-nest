@@ -13,7 +13,7 @@ export const getMyDetails = asyncHandler(async(req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "User fetched successfully", {user})
+            new ApiResponse(200, {user}, "User fetched successfully")
         )
 })
 
@@ -29,7 +29,7 @@ export const getUserDetails = asyncHandler(async(req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "User fetched successfully", {user})
+            new ApiResponse(200, {user}, "User fetched successfully")
         )
 })
 
@@ -53,7 +53,7 @@ export const updateUserProfile = asyncHandler(async(req, res) => {
         return res
             .status(200)
             .json(
-                new ApiResponse(200, "Profile updated")
+                new ApiResponse(200, null, "Profile updated")
             )
     }
 
@@ -77,7 +77,7 @@ export const updateUserProfile = asyncHandler(async(req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "User updated")
+            new ApiResponse(200, null, "User updated")
         )
 })
 
@@ -108,6 +108,6 @@ export const changeProfilePassword = asyncHandler(async(req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponse(200, "Password Updated Successfully")
+            new ApiResponse(200, null, "Password Updated Successfully")
         )
 })

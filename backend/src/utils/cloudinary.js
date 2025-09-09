@@ -21,7 +21,15 @@ const uploadOnCloudinary = (file, folder) => {
             },
             (error, result) => {
                 if (error) reject(error);
-                else resolve(result);
+                else {
+                    // Normalize the response shape for consistent usage across controllers
+                    resolve({
+                        url: result.secure_url,
+                        public_id: result.public_id,
+                        bytes: result.bytes,
+                        format: result.format
+                    });
+                }
             }
         );
         streamifier.createReadStream(file.buffer).pipe(uploadStream);

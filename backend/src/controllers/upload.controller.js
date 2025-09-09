@@ -33,11 +33,11 @@ export const uploadFile = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "File uploaded successfully", {
+      new ApiResponse(200, {
         url: uploadResult.url,
         public_id: uploadResult.public_id,
         format: uploadResult.format,
         size: uploadResult.bytes
-      })
+      }, "File uploaded successfully")
     );
 });

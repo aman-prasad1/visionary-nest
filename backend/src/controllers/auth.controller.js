@@ -63,7 +63,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     // Return the full user object for consistency with the login response.
     return res.status(201).json(
-        new ApiResponse(201, createdUser, "User registered successfully")
+        new ApiResponse(201, { user: createdUser }, "User registered successfully")
     );
 });
 
@@ -120,5 +120,5 @@ export const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out"));
+    .json(new ApiResponse(200, null, "User logged out"));
 });
