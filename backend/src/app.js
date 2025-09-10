@@ -17,6 +17,7 @@ app.use(cors({
 
         const allowedOrigins = [
             process.env.CORS_ORIGIN,
+            'https://visionary-nest.vercel.app',
             'http://localhost:5173', // Vite dev server
             'http://localhost:3000', // Alternative dev port mat puchna kisliye diye hai agar koi aur port use kar raha ho toh usko bhi add karna padega
         ].filter(Boolean);
