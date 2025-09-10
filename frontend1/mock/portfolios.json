@@ -1,0 +1,116 @@
+{
+  "portfolios": [
+    {
+      "skills": [
+        {
+          "name": "",
+          "level": ""
+        }
+      ],
+      "projects": [
+        {
+          "title": "",
+          "description": "",
+          "tech": "",
+          "thumbnail": "",
+          "github": "",
+          "live": "",
+          "collaborators": ""
+        }
+      ],
+      "certificates": [
+        {
+          "name": "",
+          "issuer": "",
+          "date": "",
+          "validTill": "",
+          "fileUrl": "",
+          "relatedSkills": ""
+        }
+      ],
+      "experiences": [
+        {
+          "role": "",
+          "org": "",
+          "location": "",
+          "start": "",
+          "end": "",
+          "bullets": ""
+        }
+      ],
+      "education": [
+        {
+          "title": "",
+          "org": "",
+          "dateRange": "",
+          "bullets": ""
+        }
+      ],
+      "id": "1756456596024"
+    },
+    {
+      "skills": [
+        {
+          "name": "mern + next",
+          "level": "35"
+        }
+      ],
+      "projects": [
+        {
+          "title": "e-commerce",
+          "description": "nexora",
+          "tech": "nextjs",
+          "thumbnail": "",
+          "github": "https://github.com/Bilwamoy/E-commerce-Nexora",
+          "live": "fTwt",
+          "collaborators": "self"
+        }
+      ],
+      "certificates": [
+        {
+          "name": "cyber job simulation",
+          "issuer": "deloitte",
+          "date": "25625",
+          "validTill": "25625",
+          "fileUrl": "hhohol",
+          "relatedSkills": "cybersecurity"
+        }
+      ],
+      "experiences": [
+        {
+          "role": "developer",
+          "org": "futureinterns",
+          "location": "remote",
+          "start": "654547",
+          "end": "545875",
+          "bullets": "sfwtgwag"
+        }
+      ],
+      "education": [
+        {
+          "title": "btech cse",
+          "org": "brainware",
+          "dateRange": "2023*2027",
+          "bullets": "YHIUTR"
+        }
+      ],
+      "name": "Bilwamoy Chakraborty",
+      "phone": "08583866014",
+      "email": "thunderthor272@gmail.com",
+      "location": "barrackpore ",
+      "avatar": {},
+      "resume": {},
+      "taglineLeft": "web dev",
+      "taglineHighlight": "design ",
+      "taglineRight": " ui",
+      "subTagline": "frontend",
+      "aboutShort": "developing websites ",
+      "yearsExperience": "2",
+      "projectsCount": "5",
+      "github": "https://github.com/Bilwamoy",
+      "linkedin": "https://www.linkedin.com/in/bilwamoy/",
+      "website": "https://bilwamoy-portfolio.vercel.app/",
+      "id": "1756461000607"
+    }
+  ]
+}
