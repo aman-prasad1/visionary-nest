@@ -43,16 +43,19 @@ const Step6: React.FC<Step6Props> = ({ items, handleItemChange, handleAddItem, h
                 />
                 {errors[`certificate_issuer_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`certificate_issuer_${index}`]}</p>}
               </div>
+              <div>
+                <input
+                  type="date"
+                  placeholder="Date"
+                  value={item.date}
+                  onChange={(e) => handleItemChange(index, 'date', e.target.value)}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                {errors[`certificate_date_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`certificate_date_${index}`]}</p>}
+              </div>
               <input
-                type="text"
-                placeholder="Date (e.g., Dec 2023)"
-                value={item.date}
-                onChange={(e) => handleItemChange(index, 'date', e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <input
-                type="text"
-                placeholder="Valid Till (e.g., Dec 2025)"
+                type="date"
+                placeholder="Valid Till"
                 value={item.validTill}
                 onChange={(e) => handleItemChange(index, 'validTill', e.target.value)}
                 className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"

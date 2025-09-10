@@ -167,6 +167,9 @@ const NewCreatePortfolio: React.FC = () => {
           if (!certificate.issuer) {
             newErrors[`certificate_issuer_${index}`] = 'Certificate issuer is required';
           }
+          if (!certificate.date) {
+            newErrors[`certificate_date_${index}`] = 'Certificate date is required';
+          }
         });
       }
     } else if (step === 7) {
@@ -210,7 +213,19 @@ const NewCreatePortfolio: React.FC = () => {
   const prevStep = () => setStep(step - 1);
 
   const handleChange = (input: any) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [input]: e.target.value });
+    const { value } = e.target;
+    if (input.includes('.')) {
+      const [key, subkey] = input.split('.');
+      setFormData((prev: any) => ({
+        ...prev,
+        [key]: {
+          ...prev[key],
+          [subkey]: value,
+        },
+      }));
+    } else {
+      setFormData((prev: any) => ({ ...prev, [input]: value }));
+    }
   };
 
   const handleFileChange = (input: any) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,10 +312,10 @@ const NewCreatePortfolio: React.FC = () => {
           }] : [],
           collaborators: project.collaborators ? project.collaborators.split(',').map((c: string) => c.trim()) : [],
         })),
-        certificates: formData.certificates.map((cert: any) => ({
+        certificates: formData.certificates.filter((cert: any) => cert.name && cert.issuer && cert.date).map((cert: any) => ({
           name: cert.name,
           issuer: cert.issuer,
-          date: cert.date ? new Date(cert.date) : new Date(),
+          date: new Date(cert.date),
           validTill: cert.validTill ? new Date(cert.validTill) : undefined,
           fileUrl: cert.fileUrl,
           relatedSkills: cert.relatedSkills ? cert.relatedSkills.split(',').map((s: string) => s.trim()) : [],

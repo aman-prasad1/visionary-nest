@@ -94,6 +94,7 @@ class ApiClient {
     return this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
+       credentials: 'include'
     });
   }
 
@@ -187,7 +188,7 @@ class ApiClient {
   // User endpoints
   async getCurrentUser(): Promise<ApiResponse> {
     // Backend exposes GET /api/users for current user
-    return this.request('/users');
+    return this.request('/users', {credentials: 'include' });
   }
 
   async updateUser(userData: any): Promise<ApiResponse> {

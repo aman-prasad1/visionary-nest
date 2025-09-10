@@ -34,21 +34,21 @@ export const updatePortfolio = asyncHandler(async (req, res) => {
   if (!userId) {
     throw new ApiError(401, "Unauthorized request");
   }
-
+   console.log("error 1");
   // Update portfolio
   const updatedPortfolio = await Portfolio.findOneAndUpdate(
     { userId },
     { $set: updateData },
     { new: true, runValidators: true }
   );
-
+  console.log("error 2");
   if (!updatedPortfolio) {
     throw new ApiError(404, "Portfolio not found");
   }
 
   // Mark user's profile as complete
   await User.findByIdAndUpdate(userId, { isProfileComplete: true });
-
+console.log("error 3");
   return res
     .status(200)
     .json(
