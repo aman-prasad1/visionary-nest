@@ -6,10 +6,10 @@ import { User } from "../models/user.model.js";
 
 // Get user's portfolio
 export const getPortfolio = asyncHandler(async (req, res) => {
-  const { username } = req.params;
-  
-  // Find user by username
-  const user = await User.findOne({ username });
+  const userId = req.user?._id;
+
+  // Find user by ID
+  const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User not found");
   }
@@ -34,21 +34,25 @@ export const updatePortfolio = asyncHandler(async (req, res) => {
   if (!userId) {
     throw new ApiError(401, "Unauthorized request");
   }
-   console.log("error 1");
-  // Update portfolio
-  const updatedPortfolio = await Portfolio.findOneAndUpdate(
+
+  // Try to update existing portfolio, or create if it doesn't exist
+  let updatedPortfolio = await Portfolio.findOneAndUpdate(
     { userId },
     { $set: updateData },
     { new: true, runValidators: true }
   );
-  console.log("error 2");
+
+  // If portfolio doesn't exist, create it
   if (!updatedPortfolio) {
-    throw new ApiError(404, "Portfolio not found");
+    updatedPortfolio = await Portfolio.create({
+      userId,
+      ...updateData
+    });
   }
 
   // Mark user's profile as complete
   await User.findByIdAndUpdate(userId, { isProfileComplete: true });
-console.log("error 3");
+
   return res
     .status(200)
     .json(

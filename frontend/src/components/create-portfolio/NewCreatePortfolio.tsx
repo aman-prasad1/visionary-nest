@@ -16,7 +16,7 @@ import PortfolioCard3D from './PortfolioCard3D';
 const NewCreatePortfolio: React.FC = () => {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,26 @@ const NewCreatePortfolio: React.FC = () => {
   // Load existing portfolio data for editing
   useEffect(() => {
     const loadExistingPortfolio = async () => {
-      if (!user?.username) {
+      // Wait for auth to complete loading
+      if (authLoading) {
+        return;
+      }
+
+      // If no user after auth loading is complete, something is wrong
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      // Wait for user to be fully loaded and authenticated with username
+      if (!user.username) {
+        console.log('User loaded but no username yet, waiting...');
+        // If we have a user but no username, just initialize with defaults for now
+        setFormData((prev: any) => ({
+          ...prev,
+          name: user.fullname || '',
+          email: user.email || '',
+        }));
         setLoading(false);
         return;
       }
@@ -97,16 +116,30 @@ const NewCreatePortfolio: React.FC = () => {
               bullets: edu.bullets?.join('\n') || ''
             })) : [{ title: '', org: '', dateRange: '', bullets: '' }]
           });
+        } else {
+          // Portfolio doesn't exist yet, initialize with default form data including user info
+          setFormData((prev: any) => ({
+            ...prev,
+            name: user.fullname || '',
+            email: user.email || '',
+          }));
         }
       } catch (error) {
-        console.error('Error loading portfolio:', error);
+        // Portfolio doesn't exist or user not found - this is normal for new users
+        console.log('No existing portfolio found, starting fresh');
+        // Initialize form with user data
+        setFormData((prev: any) => ({
+          ...prev,
+          name: user.fullname || '',
+          email: user.email || '',
+        }));
       } finally {
         setLoading(false);
       }
     };
 
     loadExistingPortfolio();
-  }, [user]);
+  }, [user, authLoading]);
 
   const validateStep = () => {
     let newErrors: any = {};
@@ -261,11 +294,16 @@ const NewCreatePortfolio: React.FC = () => {
       // Upload avatar if exists
       let avatarUrl = '';
       if (formData.avatar && formData.avatar instanceof File) {
-        const uploadResult = await apiClient.uploadFile(formData.avatar, 'avatars');
-        if (uploadResult.success && uploadResult.url) {
-          avatarUrl = uploadResult.url;
-        } else {
-          console.error('Failed to upload avatar:', uploadResult.error);
+        try {
+          const uploadResult = await apiClient.uploadFile(formData.avatar, 'avatars');
+          if (uploadResult.success && uploadResult.url) {
+            avatarUrl = uploadResult.url;
+          } else {
+            console.error('Failed to upload avatar:', uploadResult.error);
+            // Continue without avatar
+          }
+        } catch (error) {
+          console.error('Avatar upload error:', error);
           // Continue without avatar
         }
       }
@@ -273,11 +311,16 @@ const NewCreatePortfolio: React.FC = () => {
       // Upload resume if exists
       let resumeUrl = '';
       if (formData.resume && formData.resume instanceof File) {
-        const uploadResult = await apiClient.uploadFile(formData.resume, 'resumes');
-        if (uploadResult.success && uploadResult.url) {
-          resumeUrl = uploadResult.url;
-        } else {
-          console.error('Failed to upload resume:', uploadResult.error);
+        try {
+          const uploadResult = await apiClient.uploadFile(formData.resume, 'resumes');
+          if (uploadResult.success && uploadResult.url) {
+            resumeUrl = uploadResult.url;
+          } else {
+            console.error('Failed to upload resume:', uploadResult.error);
+            // Continue without resume
+          }
+        } catch (error) {
+          console.error('Resume upload error:', error);
           // Continue without resume
         }
       }
@@ -370,10 +413,22 @@ const NewCreatePortfolio: React.FC = () => {
     <Step8 key={8} items={formData.education} handleItemChange={(index, field, value) => handleDynamicChange('education', index, field, value)} handleAddItem={() => handleAddDynamic('education', { title: '', org: '', dateRange: '', bullets: '' })} handleRemoveItem={(index) => handleRemoveDynamic('education', index)} errors={errors} />
   ];
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  // If user is not authenticated or doesn't have required data, show error
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="text-white text-center">
+          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+          <p>Please log in to create your portfolio.</p>
+        </div>
       </div>
     );
   }

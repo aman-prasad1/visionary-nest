@@ -1,1 +1,1 @@
-export const DB_NAME = "talentgrid";
+export const DB_NAME = "visionary-nest"

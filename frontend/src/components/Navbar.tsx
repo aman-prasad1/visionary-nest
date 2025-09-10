@@ -136,7 +136,7 @@ const Navbar = () => {
               ) : (
                 <>
                   <RouterLink to="/auth">
-                    <Button type="text" className="text-white hover:text-purple-300">Login</Button>
+                    <Button ghost className="text-white border-white/80 hover:text-white hover:border-purple-400 hover:bg-purple-500/20 rounded-md transition-colors duration-300">Login</Button>
                   </RouterLink>
                   <RouterLink to="/auth">
                     <Button type="primary" className="bg-gradient-to-r from-purple-500 to-blue-500">Sign Up</Button>
@@ -195,7 +195,7 @@ const Navbar = () => {
                 ) : (
                   <>
                     <RouterLink to="/auth" onClick={() => setIsMenuOpen(false)}>
-                      <Button type="text" size="large" className="text-white/80 hover:text-white text-xl">Login</Button>
+                      <Button ghost size="large" className="text-white/80 border-white/80 hover:text-white hover:border-purple-400 hover:bg-purple-500/20 rounded-md text-xl transition-colors duration-300">Login</Button>
                     </RouterLink>
                     <RouterLink to="/auth" onClick={() => setIsMenuOpen(false)}>
                       <Button type="primary" size="large" className="bg-gradient-to-r from-purple-500 to-blue-500 text-xl">Sign Up</Button>

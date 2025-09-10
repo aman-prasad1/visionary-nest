@@ -127,8 +127,8 @@ class ApiClient {
   }
 
   // Portfolio endpoints
-  async getPortfolio(username: string): Promise<ApiResponse> {
-    return this.request(`/portfolios/${username}`);
+  async getPortfolio(): Promise<ApiResponse> {
+    return this.request(`/portfolios`, {credentials: 'include'});
   }
 
   async updatePortfolio(portfolioData: any): Promise<ApiResponse> {
