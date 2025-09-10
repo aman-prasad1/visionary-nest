@@ -1,363 +1,346 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
-import { MessageCircle, X, Send, Bot, User, Sparkles, Briefcase, Users, Trophy } from 'lucide-react';
-import { apiClient } from '../lib/api';
 
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
-  type?: 'suggestion' | 'normal';
-  data?: any;
+  typing?: boolean;
 }
 
-interface RecruiterSuggestion {
-  id: string;
-  name: string;
-  company: string;
-  position: string;
-  linkedin: string;
-  matchScore: number;
-  reason: string;
+interface CyberpunkChatbotProps {
+  toggleChat: () => void;
 }
 
-interface JobSuggestion {
-  id: string;
-  title: string;
-  company: string;
-  type: string;
-  location: string;
-  matchScore: number;
-  reason: string;
-}
-
-const Chatbot: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const CyberpunkChatbot: React.FC<CyberpunkChatbotProps> = ({ toggleChat }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hi! I'm your career assistant. I can help you find the right recruiters and job opportunities based on your portfolio. What would you like to know?",
+      text: "NEURAL_LINK_ESTABLISHED... Welcome to ResumeForge AI. I'm your career optimization assistant. Upload your resume or tell me about your skills, and I'll help you find the perfect job matches.",
       sender: 'bot',
-      timestamp: new Date(),
+      timestamp: new Date()
     }
   ]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const dragControls = useDragControls();
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+      
+      const x = (clientX / innerWidth - 0.5) * 15;
+      const y = (clientY / innerHeight - 0.5) * 10;
+      
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const addMessage = (text: string, sender: 'user' | 'bot', type?: 'suggestion' | 'normal', data?: any) => {
-    const newMessage: Message = {
+  const sendMessage = async (message: string) => {
+    if (!message.trim()) return;
+
+    const userMessage: Message = {
       id: Date.now().toString(),
-      text,
-      sender,
-      timestamp: new Date(),
-      type,
-      data
+      text: message,
+      sender: 'user',
+      timestamp: new Date()
     };
-    setMessages(prev => [...prev, newMessage]);
-  };
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
-
-    const userMessage = inputValue.trim();
-    setInputValue('');
-    addMessage(userMessage, 'user');
-
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
     setIsTyping(true);
 
-    try {
-      // Call the backend API for suggestions
-      const response = await fetch('/api/chat/suggestions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userMessage }),
-      });
+    // Simulate bot response
+    setTimeout(() => {
+      const botResponses = [
+        "ANALYZING_PROFILE... I can see you're interested in tech roles. Let me scan the job market for matches...",
+        "SKILL_MATRIX_PROCESSED... Your technical stack shows strong potential. I've identified 127 matching positions.",
+        "OPTIMIZATION_COMPLETE... Based on your experience, I recommend focusing on Frontend Developer and Full-Stack roles.",
+        "NEURAL_SCAN_RESULTS... Your profile matches 89% with top-tier companies. Let me enhance your resume keywords.",
+        "CAREER_PATH_CALCULATED... I suggest highlighting your React and TypeScript skills for maximum ATS compatibility."
+      ];
 
-      const data = await response.json();
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: botResponses[Math.floor(Math.random() * botResponses.length)],
+        sender: 'bot',
+        timestamp: new Date()
+      };
 
-      if (data.success) {
-        const { recruiters, jobs } = data.data;
-
-        // Add bot response with suggestions
-        addMessage("Based on your portfolio, here are some tailored suggestions:", 'bot', 'suggestion', {
-          recruiters: recruiters || [],
-          jobs: jobs || []
-        });
-      } else {
-        addMessage("I couldn't fetch suggestions right now. Please try again later.", 'bot');
-      }
-    } catch (error) {
-      console.error('Chatbot error:', error);
-      addMessage("Sorry, I'm having trouble connecting. Please try again.", 'bot');
-    } finally {
+      setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
+    }, 2000);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      sendMessage(`RESUME_UPLOADED: ${file.name} - Analyzing document structure and extracting key qualifications...`);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
+  const quickActions = [
+    "Analyze my resume",
+    "Find job matches",
+    "Improve my skills",
+    "ATS optimization",
+    "Salary insights",
+    "Interview prep"
+  ];
 
   return (
-    <>
-      {/* Floating Chat Button */}
-      <motion.div
-        drag
-        dragConstraints={{
-          left: 10,
-          right: window.innerWidth - 80,
-          top: 10,
-          bottom: window.innerHeight - 80,
-        }}
-        dragMomentum={false}
-        initial={{ scale: 0, x: 0, y: 0 }}
-        animate={{ scale: 1 }}
-        className="fixed bottom-6 right-6 z-50 cursor-grab"
-        whileTap={{ cursor: 'grabbing' }}
-      >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setIsOpen(!isOpen)}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+    <div className="fixed inset-0 bg-black text-white z-50 overflow-hidden font-mono">
+      <button onClick={toggleChat} className="absolute top-4 right-4 text-3xl text-red-500 hover:text-red-400 transition-colors z-30">
+        &times;
+      </button>
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-black to-cyan-900/20"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] animate-pulse"></div>
+      
+      {/* Floating Particles */}
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute animate-float opacity-40"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 5}s`,
+            animationDuration: `${3 + Math.random() * 4}s`,
+          }}
         >
-          <AnimatePresence mode="wait">
-            {isOpen ? (
-              <motion.div
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <X size={24} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="chat"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <MessageCircle size={24} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.button>
-      </motion.div>
+          <div className="w-1 h-1 bg-cyan-400 rounded-full shadow-lg shadow-cyan-400/50"></div>
+        </div>
+      ))}
 
-      {/* Chat Window */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            drag
-            dragListener={false}
-            dragControls={dragControls}
-            dragConstraints={{
-              left: 10,
-              right: window.innerWidth - 384 - 10, // w-96 is 384px
-              top: 10,
-              bottom: window.innerHeight - 500 - 10, // h-[500px]
-            }}
-            initial={{ opacity: 0, y: 20, scale: 0.95, x: 0 }}
-            animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-96 h-[500px] bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-40 flex flex-col"
-          >
-            {/* Header */}
-            <motion.div
-              onPointerDown={(event) => dragControls.start(event)}
-              className="flex items-center justify-between p-4 border-b border-white/10 cursor-grab"
-              whileTap={{ cursor: 'grabbing' }}
+      {/* Header */}
+      <div className="relative z-20 border-b border-cyan-400/30 bg-black/80 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            {/* Bot Avatar */}
+            <div 
+              className="relative transition-transform duration-200 ease-out"
+              style={{
+                transform: `translate(${mousePosition.x * 0.5}px, ${mousePosition.y * 0.5}px) rotateY(${mousePosition.x * 0.2}deg)`
+              }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center border-2 border-purple-400/50 shadow-lg">
-                  <Bot size={28} className="text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold">
-                    VisionaryNest Assistant
-                  </h3>
-                  <p className="text-gray-400 text-sm">Your AI portfolio guide</p>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 p-0.5 animate-pulse">
+                <div className="w-full h-full rounded-full bg-black flex items-center justify-center relative overflow-hidden">
+                  {/* Bot Face */}
+                  <svg width="24" height="24" viewBox="0 0 24 24" className="text-cyan-400">
+                    <circle cx="8" cy="10" r="1.5" fill="currentColor" className="animate-pulse"/>
+                    <circle cx="16" cy="10" r="1.5" fill="currentColor" className="animate-pulse"/>
+                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2Z" fill="currentColor"/>
+                    <path d="M21 9V7C21 5.9 20.1 5 19 5H5C3.9 5 3 5.9 3 7V9C3 10.1 3.9 11 5 11V17C5 18.1 5.9 19 7 19H9C9 20.1 9.9 21 11 21H13C14.1 21 15 20.1 15 19H17C18.1 19 19 18.1 19 17V11C20.1 11 21 10.1 21 9Z" fill="currentColor" opacity="0.3"/>
+                  </svg>
+                  
+                  {/* Scanning Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent animate-scan-horizontal"></div>
                 </div>
               </div>
+              
+              {/* Status Indicator */}
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full"></div>
+            </div>
+
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                ResumeForge AI
+              </h1>
+              <p className="text-xs text-gray-400">Career Optimization Assistant</p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-4 text-xs">
+            <div className="text-green-400">● ONLINE</div>
+            <div className="text-cyan-400">AI_CORE: ACTIVE</div>
+            <div className="text-blue-400">NEURAL_SYNC: 100%</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Container */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 h-[calc(100vh-200px)]">
+          
+          {/* Quick Actions Sidebar */}
+          <div className="lg:col-span-1 space-y-4">
+            <div className="border border-cyan-400/30 rounded-lg bg-black/40 backdrop-blur-sm p-4">
+              <h3 className="text-sm font-bold text-cyan-400 mb-4 uppercase tracking-wide">Quick Actions</h3>
+              <div className="space-y-2">
+                {quickActions.map((action, index) => (
+                  <button
+                    key={index}
+                    onClick={() => sendMessage(action)}
+                    className="w-full text-left px-3 py-2 rounded border border-blue-400/20 text-sm text-gray-300 hover:bg-blue-500/10 hover:text-blue-400 hover:border-blue-400/50 transition-all duration-300"
+                  >
+                    &gt; {action}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Upload Section */}
+            <div className="border border-purple-400/30 rounded-lg bg-black/40 backdrop-blur-sm p-4">
+              <h3 className="text-sm font-bold text-purple-400 mb-4 uppercase tracking-wide">Upload Resume</h3>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept=".pdf,.doc,.docx"
+                className="hidden"
+              />
               <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full px-4 py-3 border-2 border-dashed border-purple-400/50 rounded-lg text-purple-400 hover:bg-purple-500/10 hover:border-purple-400 transition-all duration-300 text-sm"
               >
-                <X size={20} />
+                <div className="flex items-center justify-center space-x-2">
+                  <span>📁</span>
+                  <span>Upload File</span>
+                </div>
               </button>
-            </motion.div>
+            </div>
+          </div>
 
+          {/* Chat Area */}
+          <div className="lg:col-span-3 flex flex-col border border-cyan-400/30 rounded-lg bg-black/40 backdrop-blur-sm overflow-hidden">
+            
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
               {messages.map((message) => (
-                <motion.div
+                <div
                   key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {message.sender === 'bot' && (
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Bot size={16} className="text-white" />
-                    </div>
-                  )}
-                  <div className={`max-w-[70%] ${message.sender === 'user' ? 'order-1' : 'order-2'}`}>
-                    <div
-                      className={`p-3 rounded-2xl ${
-                        message.sender === 'user'
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-white/10 text-gray-200'
-                      }`}
-                    >
-                      {message.type === 'suggestion' && message.data ? (
-                        <div className="space-y-4">
-                          <p className="text-sm">{message.text}</p>
-
-                          {/* Recruiter Suggestions */}
-                          {message.data.recruiters && message.data.recruiters.length > 0 && (
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <Users size={16} className="text-blue-400" />
-                                <span className="text-sm font-semibold text-blue-400">Recommended Recruiters</span>
-                              </div>
-                              <div className="space-y-2">
-                                {message.data.recruiters.map((recruiter: RecruiterSuggestion) => (
-                                  <motion.div
-                                    key={recruiter.id}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="bg-white/5 rounded-lg p-3 border border-white/5"
-                                  >
-                                    <div className="flex justify-between items-start mb-1">
-                                      <h4 className="text-sm font-semibold text-white">{recruiter.name}</h4>
-                                      <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">
-                                        {recruiter.matchScore}% match
-                                      </span>
-                                    </div>
-                                    <p className="text-xs text-gray-400 mb-2">{recruiter.position} at {recruiter.company}</p>
-                                    <p className="text-xs text-gray-300">{recruiter.reason}</p>
-                                  </motion.div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Job Suggestions */}
-                          {message.data.jobs && message.data.jobs.length > 0 && (
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <Briefcase size={16} className="text-green-400" />
-                                <span className="text-sm font-semibold text-green-400">Job Opportunities</span>
-                              </div>
-                              <div className="space-y-2">
-                                {message.data.jobs.map((job: JobSuggestion) => (
-                                  <motion.div
-                                    key={job.id}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 }}
-                                    className="bg-white/5 rounded-lg p-3 border border-white/5"
-                                  >
-                                    <div className="flex justify-between items-start mb-1">
-                                      <h4 className="text-sm font-semibold text-white">{job.title}</h4>
-                                      <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">
-                                        {job.matchScore}% match
-                                      </span>
-                                    </div>
-                                    <p className="text-xs text-gray-400 mb-2">{job.company} • {job.location}</p>
-                                    <p className="text-xs text-gray-300">{job.reason}</p>
-                                  </motion.div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-sm">{message.text}</p>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  <div className={`max-w-xs lg:max-w-md xl:max-w-lg ${
+                    message.sender === 'user' 
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/50' 
+                      : 'bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-600/50'
+                  } rounded-lg p-4 space-y-2`}>
+                    
+                    {message.sender === 'bot' && (
+                      <div className="flex items-center space-x-2 text-xs text-cyan-400">
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                        <span>ResumeForge AI</span>
+                        <span className="text-gray-500">
+                          {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                      </div>
+                    )}
+                    
+                    <p className={`text-sm leading-relaxed ${
+                      message.sender === 'user' ? 'text-cyan-100' : 'text-gray-200'
+                    }`}>
+                      {message.text}
                     </p>
+                    
+                    {message.sender === 'user' && (
+                      <div className="flex justify-end text-xs text-gray-400">
+                        {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </div>
+                    )}
                   </div>
-                  {message.sender === 'user' && (
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <User size={16} className="text-white" />
-                    </div>
-                  )}
-                </motion.div>
+                </div>
               ))}
-
+              
               {/* Typing Indicator */}
               {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3 justify-start"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Bot size={16} className="text-white" />
-                  </div>
-                  <div className="bg-white/10 p-3 rounded-2xl">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="flex justify-start">
+                  <div className="bg-gradient-to-r from-gray-800/50 to-gray-700/50 border border-gray-600/50 rounded-lg p-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                      <span className="text-xs text-cyan-400">AI is analyzing...</span>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               )}
-
+              
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="p-4 border-t border-white/10">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Ask about recruiters, jobs, or career advice..."
-                  className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleSendMessage}
-                  disabled={!inputValue.trim() || isTyping}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-2 rounded-xl hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            {/* Input Area */}
+            <div className="border-t border-cyan-400/30 p-4">
+              <div className="flex space-x-4">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage(inputMessage)}
+                    placeholder="Type your message or ask about career optimization..."
+                    className="w-full bg-gray-900/50 border border-gray-600/50 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400/70 focus:bg-gray-900/70 transition-all duration-300"
+                  />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">
+                    ENTER
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => sendMessage(inputMessage)}
+                  disabled={!inputMessage.trim() || isTyping}
+                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-bold text-white hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  <Send size={20} />
-                </motion.button>
+                  SEND
+                </button>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        @keyframes scan-horizontal {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        
+        .animate-scan-horizontal {
+          animation: scan-horizontal 2s linear infinite;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(6, 182, 212, 0.5);
+          border-radius: 3px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(6, 182, 212, 0.8);
+        }
+      `}</style>
+    </div>
   );
 };
 
-export default Chatbot;
+export default CyberpunkChatbot;

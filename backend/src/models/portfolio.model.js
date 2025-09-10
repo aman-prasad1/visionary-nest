@@ -161,7 +161,6 @@ const portfolioSchema = new mongoose.Schema({
 });
 
 // Indexes for better query performance
-portfolioSchema.index({ userId: 1 });
 portfolioSchema.index({ 'skills.name': 'text', 'projects.title': 'text', 'projects.description': 'text' });
 
 // Add text index for search functionality

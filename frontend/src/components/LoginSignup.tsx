@@ -249,6 +249,20 @@ const SkillForgeAuth: React.FC = () => {
         exit: { opacity: 0, y: -20, transition: { duration: 0.2, ease: 'easeIn' } }, // easeIn
     };
 
+    const EyeIcon = ({ size = 20, ...props }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+    );
+
+    const EyeOffIcon = ({ size = 20, ...props }) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+    );
+
     return (
         <>
             <style>{`
@@ -304,26 +318,20 @@ const SkillForgeAuth: React.FC = () => {
                                         <input type="text" id="email" name="email" value={formData.email} onChange={handleChange} style={styles.input} placeholder={isSignUp ? "you@example.com" : "Enter your email or username"} required />
                                         {errors.email && <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '4px' }}>{errors.email}</p>}
                                     </motion.div>
-                                    <motion.div variants={formItemVariants} style={styles.inputGroup}>
+                                    <motion.div variants={formItemVariants} style={{...styles.inputGroup, position: 'relative'}}>
                                         <label htmlFor="password" style={styles.label}>Password</label>
                                         <input type={showPassword ? 'text' : 'password'} id="password" name="password" value={formData.password} onChange={handleChange} style={styles.input} placeholder="Enter your password" required />
+                                        <button type="button" onClick={() => setShowPassword(!showPassword)} style={styles.eyeButton}>{showPassword ? <EyeOffIcon /> : <EyeIcon />}</button>
                                         {errors.password && <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '4px' }}>{errors.password}</p>}
-                                    </motion.div>
-                                    <motion.div variants={formItemVariants} style={styles.showPasswordContainer}>
-                                        <input type="checkbox" id="show-password" checked={showPassword} onChange={() => setShowPassword(!showPassword)} style={{ cursor: 'pointer' }}/>
-                                        <label htmlFor="show-password" style={styles.showPasswordLabel}>Show password</label>
                                     </motion.div>
 
                                     {isSignUp && (
                                         <>
-                                            <motion.div variants={formItemVariants} style={styles.inputGroup}>
+                                            <motion.div variants={formItemVariants} style={{...styles.inputGroup, position: 'relative'}}>
                                                 <label htmlFor="confirmPassword" style={styles.label}>Confirm Password</label>
                                                 <input type={showConfirmPassword ? 'text' : 'password'} id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} style={styles.input} placeholder="Confirm your password" required />
+                                                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeButton}>{showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}</button>
                                                 {errors.confirmPassword && <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '4px' }}>{errors.confirmPassword}</p>}
-                                            </motion.div>
-                                            <motion.div variants={formItemVariants} style={styles.showPasswordContainer}>
-                                                <input type="checkbox" id="show-confirm-password" checked={showConfirmPassword} onChange={() => setShowConfirmPassword(!showConfirmPassword)} style={{ cursor: 'pointer' }}/>
-                                                <label htmlFor="show-confirm-password" style={styles.showPasswordLabel}>Show confirm password</label>
                                             </motion.div>
 
                                             <motion.div variants={formItemVariants} style={styles.inputGroup}>
@@ -422,7 +430,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        background: '#f0f4f8',
+        background: '#0d1117',
         fontFamily: "'Poppins', sans-serif",
     },
     container: {
@@ -430,7 +438,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         width: '1000px',
         maxWidth: '95%',
         minHeight: '650px',
-        background: '#ffffff',
+        background: '#161b22',
         borderRadius: '24px',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         overflow: 'hidden',
@@ -438,7 +446,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     leftPanel: {
         flex: '1 1 420px', // FIX: Allows shrinking and growing
-        backgroundColor: '#1e293b',
+        backgroundColor: '#0d1117',
         color: 'white',
         padding: '50px',
         display: 'flex',
@@ -456,7 +464,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         justifyContent: 'center',
         position: 'relative',
         overflow: 'hidden',
-        background: '#111827',
+        background: '#161b22',
         boxSizing: 'border-box',
     },
     animatedBg: {
@@ -539,6 +547,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     inputGroup: {
         marginBottom: '22px',
+        position: 'relative',
     },
     label: {
         display: 'block',
@@ -549,7 +558,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     input: {
         width: '100%',
-        padding: '14px 16px',
+        padding: '14px 40px 14px 16px',
         borderRadius: '10px',
         border: '1px solid #4b5563',
         fontSize: '1rem',
@@ -558,16 +567,16 @@ const styles: { [key: string]: React.CSSProperties } = {
         background: '#1f2937',
         color: '#f3f4f6',
     },
-    showPasswordContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '28px',
-        gap: '8px',
-    },
-    showPasswordLabel: {
-        fontSize: '0.9rem',
-        color: '#d1d5db',
+    eyeButton: {
+        position: 'absolute',
+        top: '50%',
+        right: '10px',
+        transform: 'translateY(calc(-50% + 10px))',
+        background: 'none',
+        border: 'none',
+        color: '#9ca3af',
         cursor: 'pointer',
+        padding: '5px',
     },
     submitButton: {
         padding: '16px',
