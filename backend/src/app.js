@@ -18,7 +18,9 @@ app.use(cors({
         const allowedOrigins = [
             process.env.CORS_ORIGIN,
             'http://localhost:5173', // Vite dev server
-            'http://localhost:3000', // Alternative dev port mat puchna kisliye diye hai agar koi aur port use kar raha ho toh usko bhi add karna padega
+            'http://localhost:3000', // Alternative dev port
+            'http://127.0.0.1:5173', // IPv4 localhost
+            'http://127.0.0.1:3000'  // IPv4 localhost alternative
         ].filter(Boolean);
 
         if (allowedOrigins.indexOf(origin) !== -1) {
@@ -54,4 +56,7 @@ app.use("/api/upload", uploadRouter);
 app.use("/api/chat", chatbotRouter);
 
 app.use(errorMiddleware);
+
+// For Vercel serverless deployment
+export default app;
 export { app };
