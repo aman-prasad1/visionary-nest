@@ -23,10 +23,10 @@ const KeyframeStyles = () => (
 
 const VisionaryNestLandingPage: React.FC = () => {
   const featuredPortfolios = [
-    { name: 'AI Chatbot', image: 'https://placehold.co/120x120/0d1120/FFFFFF?text=AI' },
-    { name: 'E-commerce UI', image: 'https://placehold.co/120x120/0d1120/FFFFFF?text=UI' },
-    { name: 'Fitness App', image: 'https://placehold.co/120x120/0d1120/FFFFFF?text=App' },
-    { name: 'Data Dashboard', image: 'https://placehold.co/120x120/0d1120/FFFFFF?text=Data' },
+    { name: 'AI Chatbot', image: '/ai.jpg' },
+    { name: 'E-commerce UI', image: '/E-commerce UI.jpg' },
+    { name: 'Fitness App', image: '/Fitness App.jpg' },
+    { name: 'Data Dashboard', image: '/Data Dashboard.jpg' },
   ];
 
   return (
@@ -66,8 +66,8 @@ const VisionaryNestLandingPage: React.FC = () => {
                     <circle cx="100" cy="80" r="35" fill="rgba(255, 255, 255, 0.9)" />
                     <circle cx="88" cy="75" r="3" fill="#0B1120" />
                     <circle cx="112" cy="75" r="3" fill="#0B1120" />
+                    <path d="M 85 95 Q 100 110 115 95" stroke="#0B1120" fill="transparent" strokeWidth="2" />
                     <rect x="75" y="115" width="50" height="60" rx="25" fill="rgba(255, 255, 255, 0.9)" />
-                    <text x="85" y="135" fontSize="16" fill="#007BFF" fontFamily="monospace">{'</>'}</text>
                   </svg>
                 </motion.div>
                 <p className="text-xl sm:text-2xl font-medium leading-snug text-white/90">

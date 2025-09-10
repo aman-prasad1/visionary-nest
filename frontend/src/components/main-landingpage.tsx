@@ -194,7 +194,7 @@ const CyberpunkLanding = () => {
             >
               <div className="relative">
                 <img
-                  src="/Gemini_Generated_Image_gpou9ygpou9ygpou.png"
+                  src="/avatar.png"
                   alt="Cyberpunk Robot Avatar"
                   className="w-96 h-96 object-cover rounded-lg shadow-2xl shadow-cyan-500/30 border border-cyan-400/20"
                   style={{
