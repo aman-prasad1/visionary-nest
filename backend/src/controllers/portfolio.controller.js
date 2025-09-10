@@ -6,10 +6,10 @@ import { User } from "../models/user.model.js";
 
 // Get user's portfolio
 export const getPortfolio = asyncHandler(async (req, res) => {
-  const { username } = req.params;
-  
-  // Find user by username
-  const user = await User.findOne({ username });
+  const userId = req.user?._id;
+
+  // Find user by ID
+  const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(404, "User not found");
   }

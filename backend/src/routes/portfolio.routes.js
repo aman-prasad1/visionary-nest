@@ -16,7 +16,7 @@ const router = Router();
 // Public routes
 router.route("/browse").get(browsePortfolios);
 router.route("/featured").get(getFeaturedPortfolios);
-router.route("/:username").get(getPortfolio);
+router.route("/").get(verifyJWT, getPortfolio);
 
 // Protected routes (require authentication)
 router.use(verifyJWT);

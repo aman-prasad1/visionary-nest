@@ -94,6 +94,7 @@ class ApiClient {
     return this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
+       credentials: 'include'
     });
   }
 
@@ -126,8 +127,8 @@ class ApiClient {
   }
 
   // Portfolio endpoints
-  async getPortfolio(username: string): Promise<ApiResponse> {
-    return this.request(`/portfolios/${username}`);
+  async getPortfolio(): Promise<ApiResponse> {
+    return this.request(`/portfolios`, {credentials: 'include'});
   }
 
   async updatePortfolio(portfolioData: any): Promise<ApiResponse> {
@@ -187,7 +188,7 @@ class ApiClient {
   // User endpoints
   async getCurrentUser(): Promise<ApiResponse> {
     // Backend exposes GET /api/users for current user
-    return this.request('/users');
+    return this.request('/users', {credentials: 'include' });
   }
 
   async updateUser(userData: any): Promise<ApiResponse> {
