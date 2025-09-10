@@ -35,15 +35,19 @@ export const updatePortfolio = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Unauthorized request");
   }
 
-  // Update portfolio
-  const updatedPortfolio = await Portfolio.findOneAndUpdate(
+  // Try to update existing portfolio, or create if it doesn't exist
+  let updatedPortfolio = await Portfolio.findOneAndUpdate(
     { userId },
     { $set: updateData },
     { new: true, runValidators: true }
   );
 
+  // If portfolio doesn't exist, create it
   if (!updatedPortfolio) {
-    throw new ApiError(404, "Portfolio not found");
+    updatedPortfolio = await Portfolio.create({
+      userId,
+      ...updateData
+    });
   }
 
   // Mark user's profile as complete

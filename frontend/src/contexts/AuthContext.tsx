@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const setupExpiryWatcher = () => {
       const token = localStorage.getItem('accessToken');
-      if (!token) return;
+      if (!token || !user) return;
 
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -115,7 +115,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => {
       if (cleanup && typeof cleanup === 'function') cleanup();
     };
-  }, []); // Empty dependency array - only run once on mount
+  }, [user]); // Depend on user to avoid running when not authenticated
 
   const login = async (emailOrUsername: string, password: string) => {
     try {

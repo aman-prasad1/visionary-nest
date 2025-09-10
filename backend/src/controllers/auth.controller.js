@@ -32,15 +32,14 @@ export const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email or username already exists");
     }
 
-    if (!req.file) {
-        throw new ApiError(400, "Avatar file is required");
-    }
-
-    // The `uploadOnCloudinary` utility should only receive the folder name, not the full path.
-    const avatar = await uploadOnCloudinary(req.file, "avatars");
-
-    if (!avatar || !avatar.url) {
-        throw new ApiError(500, "Avatar upload failed on the server.");
+    let avatar = null;
+    if (req.file) {
+        // The `uploadOnCloudinary` utility should only receive the folder name, not the full path.
+        avatar = await uploadOnCloudinary(req.file, "avatars");
+        
+        if (!avatar || !avatar.url) {
+            throw new ApiError(500, "Avatar upload failed on the server.");
+        }
     }
 
     const user = await User.create({
@@ -48,11 +47,11 @@ export const registerUser = asyncHandler(async (req, res) => {
         email,
         password,
         username: username.toLowerCase(),
-        avatar: {
+        avatar: avatar ? {
             public_id: avatar.public_id,
             // Use `secure_url` for HTTPS and consistency. The old code used `url`.
             public_url: avatar.secure_url,
-        },
+        } : undefined,
     });
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken");

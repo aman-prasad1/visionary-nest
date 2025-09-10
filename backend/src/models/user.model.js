@@ -102,22 +102,29 @@ userSchema.pre("save", async function (next) {
 // Create a portfolio when a new user signs up
 userSchema.post('save', async function(doc, next) {
   try {
-    if (this.isNew) {
-      const portfolio = new Portfolio({
-        userId: this._id,
-        email: this.email,
-        social: {
-          github: this.socialLinks?.github,
-          linkedin: this.socialLinks?.linkedin,
-          website: this.socialLinks?.website
-        }
-      });
+    if (this.isNew && !this.portfolioId) {
+      // Check if portfolio already exists
+      const existingPortfolio = await Portfolio.findOne({ userId: this._id });
       
-      const savedPortfolio = await portfolio.save();
-      await User.findByIdAndUpdate(this._id, { portfolioId: savedPortfolio._id });
+      if (!existingPortfolio) {
+        const portfolio = new Portfolio({
+          userId: this._id,
+          email: this.email,
+          social: {
+            github: this.socialLinks?.github,
+            linkedin: this.socialLinks?.linkedin,
+            website: this.socialLinks?.website
+          }
+        });
+        
+        const savedPortfolio = await portfolio.save();
+        // Use updateOne to avoid triggering the post-save hook again
+        await User.updateOne({ _id: this._id }, { portfolioId: savedPortfolio._id });
+      }
     }
   } catch (error) {
     console.error('Error creating portfolio for new user:', error);
+    // Don't throw error to prevent user creation from failing
   }
   next();
 });
