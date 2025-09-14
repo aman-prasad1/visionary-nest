@@ -354,7 +354,7 @@ export default function PortfolioPage({ data }: { data?: StudentData }) {
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <p className="techy text-sky-300/90">{"Hey, I am"}</p>
               <h1 className="algerianish text-4xl md:text-6xl font-black leading-tight tracking-tight">
-                <span className="bg-gradient-to-r text-slate-300 from-sky-200 via-sky-400 to-indigo-400 bg-clip-text text-transparent type-caret">
+                <span className="bg-gradient-to-r text-sky-500 from-sky-200 via-sky-400 to-indigo-400 bg-clip-text text-transparent type-caret">
                   <Typewriter
                     options={{
                       strings: generateCatchyPhrases(displayData.skills || []),
