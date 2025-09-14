@@ -17,9 +17,9 @@ const Portfolio = () => {
       }
 
       try {
-        const response = await apiClient.getPortfolio(userId);
+        const response = await apiClient.getPortfolio();
         if (response.success && response.data) {
-          setPortfolioData(response.data);
+          setPortfolioData(response.message);
         } else {
           setError(response.error || 'Portfolio not found');
         }

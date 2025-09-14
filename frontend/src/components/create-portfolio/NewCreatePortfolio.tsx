@@ -57,7 +57,7 @@ const NewCreatePortfolio: React.FC = () => {
       }
 
       try {
-        const response = await apiClient.getPortfolio(user.username);
+        const response = await apiClient.getPortfolio();
         if (response.success && response.data) {
           setIsEditing(true);
 
@@ -434,7 +434,7 @@ const NewCreatePortfolio: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-4xl bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 m-4">
         <h1 className="text-4xl font-bold text-center mb-2 text-white">
           {isEditing ? 'Edit Your Portfolio' : 'Create Your Portfolio'}

@@ -30,9 +30,9 @@ const VisionaryNestLandingPage: React.FC = () => {
   ];
 
   return (
-    <>
+    <div className=''>
       <KeyframeStyles />
-      <div className="min-h-screen bg-[#0B1120] font-orbitron text-[#E0E0E0] overflow-x-hidden">
+      <div className="font-orbitron text-[#E0E0E0] overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           
           {/* Background Text */}
@@ -121,7 +121,7 @@ const VisionaryNestLandingPage: React.FC = () => {
           </main>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

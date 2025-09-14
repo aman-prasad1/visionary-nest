@@ -9,7 +9,7 @@ interface Step2Props {
 
 const Step2: React.FC<Step2Props> = ({ formData, handleChange, errors }) => {
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div className="w-full h-full max-w-lg mx-auto">
       <h2 className="text-3xl font-bold mb-6 text-center text-white">Tagline and About</h2>
       <div className="grid grid-cols-1 gap-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
