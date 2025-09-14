@@ -51,3 +51,17 @@ html {
   scrollbar-width: thin;
   scrollbar-color: rgba(102, 126, 234, 0.6) transparent;
 }
+
+/* Typewriter styles - prevent CSS purging */
+.Typewriter__wrapper,
+.Typewriter__cursor {
+  background: linear-gradient(to right, #e0f2fe, #38bdf8, #818cf8) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+.Typewriter__cursor {
+  color: #38bdf8 !important;
+}

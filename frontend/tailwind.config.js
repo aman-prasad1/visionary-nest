@@ -4,6 +4,15 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    'bg-gradient-to-r',
+    'from-sky-200',
+    'via-sky-400', 
+    'to-indigo-400',
+    'bg-clip-text',
+    'text-transparent',
+    'type-caret'
+  ],
   theme: {
     extend: {
       colors: {

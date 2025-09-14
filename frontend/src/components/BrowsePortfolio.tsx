@@ -354,7 +354,16 @@ export default function PortfolioPage({ data }: { data?: StudentData }) {
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
               <p className="techy text-sky-300/90">{"Hey, I am"}</p>
               <h1 className="algerianish text-4xl md:text-6xl font-black leading-tight tracking-tight">
-                <span className="bg-gradient-to-r text-sky-500 from-sky-200 via-sky-400 to-indigo-400 bg-clip-text text-transparent type-caret">
+                <span 
+                  className="bg-gradient-to-r from-sky-200 via-sky-400 to-indigo-400 bg-clip-text text-transparent type-caret"
+                  style={{
+                    background: 'linear-gradient(to right, #e0f2fe, #38bdf8, #818cf8)',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: 'transparent'
+                  }}
+                >
                   <Typewriter
                     options={{
                       strings: generateCatchyPhrases(displayData.skills || []),
@@ -367,6 +376,20 @@ export default function PortfolioPage({ data }: { data?: StudentData }) {
                       // Handle any initialization errors
                       try {
                         typewriter.typeString('').start();
+                        
+                        // Apply styles to the typewriter container after mount
+                        setTimeout(() => {
+                          const typewriterElements = document.querySelectorAll('.Typewriter__wrapper, .Typewriter__cursor');
+                          typewriterElements.forEach((element: any) => {
+                            if (element) {
+                              element.style.background = 'linear-gradient(to right, #e0f2fe, #38bdf8, #818cf8)';
+                              element.style.webkitBackgroundClip = 'text';
+                              element.style.backgroundClip = 'text';
+                              element.style.webkitTextFillColor = 'transparent';
+                              element.style.color = '#38bdf8';
+                            }
+                          });
+                        }, 100);
                       } catch (error) {
                         console.warn('Typewriter initialization error:', error);
                       }
